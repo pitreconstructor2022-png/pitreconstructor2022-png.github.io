@@ -26,6 +26,7 @@
       justify-content: center;
       padding: 10px;
       gap: 15px;
+      flex-wrap: wrap;
     }
 
     nav button {
@@ -45,15 +46,62 @@
     main {
       text-align: center;
       margin-top: 30px;
+      padding: 20px;
     }
 
     .card {
       background-color: white;
-      width: 300px;
+      max-width: 600px;
       margin: 20px auto;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button.submit {
+      margin-top: 15px;
+      background-color: #fca311;
+      color: #14213d;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.submit:hover {
+      background-color: #e59500;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #14213d;
+      color: white;
     }
 
     footer {
@@ -89,9 +137,52 @@
         contenido.innerHTML = `
           <div class="card">
             <h3>Registro de Alquileres</h3>
-            <p>Aquí podrás agregar o consultar los registros de alquiler.</p>
-            <button onclick="alert('Esta función estará disponible pronto')">Registrar</button>
-          </div>`;
+            <form id="formAlquiler">
+              <label>Nombre del cliente</label>
+              <input type="text" id="cliente" required>
+
+              <label>Documento del cliente</label>
+              <input type="text" id="documento" required>
+
+              <label>Número de teléfono</label>
+              <input type="text" id="telefono" required>
+
+              <label>Dirección</label>
+              <input type="text" id="direccion" required>
+
+              <label>Equipo alquilado</label>
+              <input type="text" id="equipo" required>
+
+              <label>Fecha de inicio</label>
+              <input type="date" id="fechaInicio" required>
+
+              <label>Días de alquiler</label>
+              <input type="number" id="dias" required>
+
+              <label>Precio unitario</label>
+              <input type="number" id="precioUnitario" required>
+
+              <label>Precio total</label>
+              <input type="number" id="precioTotal" readonly>
+
+              <button type="button" class="submit" onclick="registrarAlquiler()">Registrar</button>
+            </form>
+
+            <h3>Lista de alquileres</h3>
+            <table id="tablaAlquileres">
+              <tr>
+                <th>Cliente</th>
+                <th>Equipo</th>
+                <th>Fecha</th>
+                <th>Días</th>
+                <th>Total ($)</th>
+              </tr>
+            </table>
+          </div>
+        `;
+
+        document.getElementById("dias").addEventListener("input", calcularTotal);
+        document.getElementById("precioUnitario").addEventListener("input", calcularTotal);
       }
 
       if (seccion === 'precios') {
@@ -99,7 +190,7 @@
           <div class="card">
             <h3>Gestión de Precios</h3>
             <p>Consulta o actualiza los precios de los materiales y equipos.</p>
-            <button onclick="alert('Esta función estará disponible pronto')">Ver precios</button>
+            <button onclick="alert('En construcción...')">Ver precios</button>
           </div>`;
       }
 
@@ -108,9 +199,39 @@
           <div class="card">
             <h3>Proveedores</h3>
             <p>Consulta la lista de proveedores y sus datos de contacto.</p>
-            <button onclick="alert('Esta función estará disponible pronto')">Ver proveedores</button>
+            <button onclick="alert('En construcción...')">Ver proveedores</button>
           </div>`;
       }
+    }
+
+    function calcularTotal() {
+      const dias = parseFloat(document.getElementById("dias").value) || 0;
+      const precioUnitario = parseFloat(document.getElementById("precioUnitario").value) || 0;
+      document.getElementById("precioTotal").value = dias * precioUnitario;
+    }
+
+    function registrarAlquiler() {
+      const cliente = document.getElementById("cliente").value;
+      const equipo = document.getElementById("equipo").value;
+      const fecha = document.getElementById("fechaInicio").value;
+      const dias = document.getElementById("dias").value;
+      const total = document.getElementById("precioTotal").value;
+
+      if (!cliente || !equipo || !fecha || !dias || !total) {
+        alert("Por favor, completa todos los campos antes de registrar.");
+        return;
+      }
+
+      const tabla = document.getElementById("tablaAlquileres");
+      const fila = tabla.insertRow(-1);
+      fila.insertCell(0).textContent = cliente;
+      fila.insertCell(1).textContent = equipo;
+      fila.insertCell(2).textContent = fecha;
+      fila.insertCell(3).textContent = dias;
+      fila.insertCell(4).textContent = total;
+
+      document.getElementById("formAlquiler").reset();
+      document.getElementById("precioTotal").value = "";
     }
   </script>
 </body>
