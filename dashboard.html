@@ -51,7 +51,7 @@
 
     .card {
       background-color: white;
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
       padding: 20px;
       border-radius: 10px;
@@ -65,7 +65,7 @@
       font-weight: bold;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
@@ -110,6 +110,19 @@
       color: gray;
       font-size: 14px;
     }
+
+    .edit-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .edit-btn:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -118,7 +131,7 @@
   <nav>
     <button onclick="mostrar('alquileres')">Alquileres</button>
     <button onclick="mostrar('precios')">Precios</button>
-    <button onclick="mostrar('proveedores')">Proveedores</button>
+    <button onclick="mostrar('ventas')">Ventas</button>
     <button onclick="window.location.href='index.html'">Cerrar sesión</button>
   </nav>
 
@@ -130,84 +143,55 @@
   <footer>© 2025 Pitre el Constructor</footer>
 
   <script>
+    // ----------- FUNCIONES PRINCIPALES -----------
     function mostrar(seccion) {
+      if (seccion === 'alquileres') mostrarAlquileres();
+      if (seccion === 'precios') mostrarPrecios();
+      if (seccion === 'ventas') mostrarVentas();
+    }
+
+    // ----------- ALQUILERES -----------
+    function mostrarAlquileres() {
       const contenido = document.getElementById('contenido');
-
-      if (seccion === 'alquileres') {
-        contenido.innerHTML = `
-          <div class="card">
-            <h3>Registro de Alquileres</h3>
-            <form id="formAlquiler">
-              <label>Nombre del cliente</label>
-              <input type="text" id="cliente" required>
-
-              <label>Documento del cliente</label>
-              <input type="text" id="documento" required>
-
-              <label>Número de teléfono</label>
-              <input type="text" id="telefono" required>
-
-              <label>Dirección</label>
-              <input type="text" id="direccion" required>
-
-              <label>Equipo alquilado</label>
-              <input type="text" id="equipo" required>
-
-              <label>Fecha de inicio</label>
-              <input type="date" id="fechaInicio" required>
-
-              <label>Días de alquiler</label>
-              <input type="number" id="dias" required>
-
-              <label>Precio unitario</label>
-              <input type="number" id="precioUnitario" required>
-
-              <label>Precio total</label>
-              <input type="number" id="precioTotal" readonly>
-
-              <button type="button" class="submit" onclick="registrarAlquiler()">Registrar</button>
-            </form>
-
-            <h3>Lista de alquileres</h3>
-            <table id="tablaAlquileres">
-              <tr>
-                <th>Cliente</th>
-                <th>Equipo</th>
-                <th>Fecha</th>
-                <th>Días</th>
-                <th>Total ($)</th>
-              </tr>
-            </table>
-          </div>
-        `;
-
-        document.getElementById("dias").addEventListener("input", calcularTotal);
-        document.getElementById("precioUnitario").addEventListener("input", calcularTotal);
-      }
-
-      if (seccion === 'precios') {
-        contenido.innerHTML = `
-          <div class="card">
-            <h3>Gestión de Precios</h3>
-            <p>Consulta o actualiza los precios de los materiales y equipos.</p>
-            <button onclick="alert('En construcción...')">Ver precios</button>
-          </div>`;
-      }
-
-      if (seccion === 'proveedores') {
-        contenido.innerHTML = `
-          <div class="card">
-            <h3>Proveedores</h3>
-            <p>Consulta la lista de proveedores y sus datos de contacto.</p>
-            <button onclick="alert('En construcción...')">Ver proveedores</button>
-          </div>`;
-      }
+      contenido.innerHTML = `
+        <div class="card">
+          <h3>Registro de Alquileres</h3>
+          <form id="formAlquiler">
+            <label>Nombre del cliente</label>
+            <input type="text" id="cliente" required>
+            <label>Documento del cliente</label>
+            <input type="text" id="documento" required>
+            <label>Teléfono</label>
+            <input type="text" id="telefono" required>
+            <label>Dirección</label>
+            <input type="text" id="direccion" required>
+            <label>Equipo alquilado</label>
+            <input type="text" id="equipo" required>
+            <label>Fecha de inicio</label>
+            <input type="date" id="fechaInicio" required>
+            <label>Días de alquiler</label>
+            <input type="number" id="dias" required>
+            <label>Precio unitario</label>
+            <input type="number" id="precioUnitario" required>
+            <label>Precio total</label>
+            <input type="number" id="precioTotal" readonly>
+            <button type="button" class="submit" onclick="registrarAlquiler()">Registrar</button>
+          </form>
+          <h3>Lista de alquileres</h3>
+          <table id="tablaAlquileres">
+            <tr><th>Cliente</th><th>Equipo</th><th>Fecha</th><th>Días</th><th>Total ($)</th></tr>
+          </table>
+        </div>
+      `;
+      document.getElementById("dias").addEventListener("input", calcularTotal);
+      document.getElementById("precioUnitario").addEventListener("input", calcularTotal);
+      mostrarAlquileresGuardados();
     }
 
     function calcularTotal() {
       const dias = parseFloat(document.getElementById("dias").value) || 0;
-      const precioUnitario = parseFloat(document.getElementById("precioUnitario").value) || 0;
-      document.getElementById("precioTotal").value = dias * precioUnitario;
+      const precio = parseFloat(document.getElementById("precioUnitario").value) || 0;
+      document.getElementById("precioTotal").value = dias * precio;
     }
 
     function registrarAlquiler() {
@@ -217,21 +201,147 @@
       const dias = document.getElementById("dias").value;
       const total = document.getElementById("precioTotal").value;
 
-      if (!cliente || !equipo || !fecha || !dias || !total) {
-        alert("Por favor, completa todos los campos antes de registrar.");
-        return;
-      }
+      const nuevo = { cliente, equipo, fecha, dias, total };
+      const alquileres = JSON.parse(localStorage.getItem("alquileres")) || [];
+      alquileres.push(nuevo);
+      localStorage.setItem("alquileres", JSON.stringify(alquileres));
 
+      mostrarAlquileres();
+    }
+
+    function mostrarAlquileresGuardados() {
       const tabla = document.getElementById("tablaAlquileres");
-      const fila = tabla.insertRow(-1);
-      fila.insertCell(0).textContent = cliente;
-      fila.insertCell(1).textContent = equipo;
-      fila.insertCell(2).textContent = fecha;
-      fila.insertCell(3).textContent = dias;
-      fila.insertCell(4).textContent = total;
+      const alquileres = JSON.parse(localStorage.getItem("alquileres")) || [];
+      alquileres.forEach(a => {
+        const fila = tabla.insertRow(-1);
+        fila.insertCell(0).textContent = a.cliente;
+        fila.insertCell(1).textContent = a.equipo;
+        fila.insertCell(2).textContent = a.fecha;
+        fila.insertCell(3).textContent = a.dias;
+        fila.insertCell(4).textContent = a.total;
+      });
+    }
 
-      document.getElementById("formAlquiler").reset();
-      document.getElementById("precioTotal").value = "";
+    // ----------- PRECIOS -----------
+    function mostrarPrecios() {
+      const contenido = document.getElementById('contenido');
+      contenido.innerHTML = `
+        <div class="card">
+          <h3>Gestión de Precios</h3>
+          <form id="formPrecio">
+            <label>Nombre del producto o equipo</label>
+            <input type="text" id="nombreProducto" required>
+            <label>Precio unitario ($)</label>
+            <input type="number" id="precioProducto" required>
+            <button type="button" class="submit" onclick="agregarPrecio()">Agregar</button>
+          </form>
+          <h3>Lista de productos</h3>
+          <table id="tablaPrecios">
+            <tr><th>Producto</th><th>Precio ($)</th></tr>
+          </table>
+        </div>
+      `;
+      mostrarPreciosGuardados();
+    }
+
+    function agregarPrecio() {
+      const nombre = document.getElementById("nombreProducto").value;
+      const precio = document.getElementById("precioProducto").value;
+
+      const precios = JSON.parse(localStorage.getItem("precios")) || [];
+      precios.push({ nombre, precio });
+      localStorage.setItem("precios", JSON.stringify(precios));
+      mostrarPrecios();
+    }
+
+    function mostrarPreciosGuardados() {
+      const tabla = document.getElementById("tablaPrecios");
+      const precios = JSON.parse(localStorage.getItem("precios")) || [];
+      precios.forEach(p => {
+        const fila = tabla.insertRow(-1);
+        fila.insertCell(0).textContent = p.nombre;
+        fila.insertCell(1).textContent = p.precio;
+      });
+    }
+
+    // ----------- VENTAS -----------
+    function mostrarVentas() {
+      const precios = JSON.parse(localStorage.getItem("precios")) || [];
+      const opciones = precios.map(p => `<option value="${p.precio}">${p.nombre}</option>`).join('');
+
+      const contenido = document.getElementById('contenido');
+      contenido.innerHTML = `
+        <div class="card">
+          <h3>Registro de Ventas</h3>
+          <form id="formVenta">
+            <label>Nombre del cliente</label>
+            <input type="text" id="nombreCliente" required>
+            <label>Cédula</label>
+            <input type="text" id="cedulaCliente" required>
+            <label>Dirección</label>
+            <input type="text" id="direccionCliente" required>
+            <label>Teléfono</label>
+            <input type="text" id="telefonoCliente" required>
+            <label>Producto</label>
+            <select id="productoVenta">${opciones}</select>
+            <label>Cantidad</label>
+            <input type="number" id="cantidadVenta" required>
+            <label>Total ($)</label>
+            <input type="number" id="totalVenta" readonly>
+            <button type="button" class="submit" onclick="registrarVenta()">Registrar venta</button>
+          </form>
+
+          <h3>Ventas registradas</h3>
+          <table id="tablaVentas">
+            <tr><th>Cliente</th><th>Producto</th><th>Cantidad</th><th>Total</th><th>Editar</th></tr>
+          </table>
+        </div>
+      `;
+      document.getElementById("cantidadVenta").addEventListener("input", calcularVentaTotal);
+      document.getElementById("productoVenta").addEventListener("change", calcularVentaTotal);
+      mostrarVentasGuardadas();
+    }
+
+    function calcularVentaTotal() {
+      const precio = parseFloat(document.getElementById("productoVenta").value) || 0;
+      const cantidad = parseFloat(document.getElementById("cantidadVenta").value) || 0;
+      document.getElementById("totalVenta").value = precio * cantidad;
+    }
+
+    function registrarVenta() {
+      const cliente = document.getElementById("nombreCliente").value;
+      const producto = document.getElementById("productoVenta").selectedOptions[0].text;
+      const cantidad = document.getElementById("cantidadVenta").value;
+      const total = document.getElementById("totalVenta").value;
+
+      const ventas = JSON.parse(localStorage.getItem("ventas")) || [];
+      ventas.push({ cliente, producto, cantidad, total });
+      localStorage.setItem("ventas", JSON.stringify(ventas));
+
+      mostrarVentas();
+    }
+
+    function mostrarVentasGuardadas() {
+      const tabla = document.getElementById("tablaVentas");
+      const ventas = JSON.parse(localStorage.getItem("ventas")) || [];
+      ventas.forEach((v, index) => {
+        const fila = tabla.insertRow(-1);
+        fila.insertCell(0).textContent = v.cliente;
+        fila.insertCell(1).textContent = v.producto;
+        fila.insertCell(2).textContent = v.cantidad;
+        fila.insertCell(3).textContent = v.total;
+        const editar = document.createElement("button");
+        editar.textContent = "Editar";
+        editar.className = "edit-btn";
+        editar.onclick = () => editarVenta(index);
+        fila.insertCell(4).appendChild(editar);
+      });
+    }
+
+    function editarVenta(index) {
+      const ventas = JSON.parse(localStorage.getItem("ventas"));
+      const v = ventas[index];
+      alert("Editar cliente: " + v.cliente + " (Próximamente editable desde el formulario)");
     }
   </script>
 </body>
