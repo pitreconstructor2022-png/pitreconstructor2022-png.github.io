@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pitre el Constructor - Inicio de Sesión</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+  <div class="login-container">
+    <img src="logo.png" alt="Logo de Pitre el Constructor" />
+    <h2>Iniciar Sesión</h2>
+
+    <input type="text" id="usuario" placeholder="Usuario" />
+    <input type="password" id="contrasena" placeholder="Contraseña" />
+    <button onclick="iniciarSesion()">Entrar</button>
+
+    <p class="error" id="mensajeError"></p>
+  </div>
+
+  <script>
+    const usuarios = {
+      "admin": "1234",
+      "lenny": "5678"
+    };
+
+    function iniciarSesion() {
+      const usuario = document.getElementById("usuario").value.trim();
+      const contrasena = document.getElementById("contrasena").value.trim();
+      const mensajeError = document.getElementById("mensajeError");
+
+      if (usuarios[usuario] === contrasena) {
+        alert("Bienvenido " + usuario + " 👷‍♂️");
+        window.location.href = "dashboard.html";
+      } else {
+        mensajeError.textContent = "Usuario o contraseña incorrectos ❌";
+      }
+    }
+  </script>
+</body>
+</html>
